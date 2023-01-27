@@ -32,6 +32,7 @@
 	type PaymentMethod = 'invoice' | 'lsat' | 'webln' | 'keysend';
 
 	let selectedPaymentMethod: PaymentMethod = ($page.params.method as PaymentMethod) || 'invoice';
+	let paid = false;
 
 	function setPagePaymentMethod(method: PaymentMethod) {
 		if (browser) {
@@ -42,13 +43,6 @@
 	}
 
 	$: setPagePaymentMethod(selectedPaymentMethod);
-
-	onMount(() => {
-		const url = new URL(window.location.href);
-		console.log(url.searchParams);
-		console.log($page.params, window.location.href);
-		// setPagePaymentMethod('invoice');
-	});
 </script>
 
 <header class="flex flex-col gap-4 text-center mb-10">
@@ -57,27 +51,32 @@
 </header>
 
 <article class="flex flex-col gap-4">
+	<section class="flex justify-center">
+		{#if !paid}
+			<img class="w-96" src="secret_box.jpg" alt="Pay the invoice to reveal the secret!" />
+		{:else}
+			<img src="secret_string.jpg" alt="A secret string!" />
+		{/if}
+	</section>
+	<section class="flex justify-center">
+		{#if selectedPaymentMethod === 'invoice'}
+			<Invoice bind:paid />
+		{:else if selectedPaymentMethod === 'lsat'}
+			<Lsat />
+		{:else if selectedPaymentMethod === 'webln'}
+			<Webln bind:paid />
+		{:else if selectedPaymentMethod === 'keysend'}
+			<Keysend />
+		{/if}
+	</section>
 	<section class="flex justify-center gap-4">
 		{#each PAYMENT_METHOD as { title, method }}
 			<Button
 				secondary={method !== selectedPaymentMethod}
 				on:click={() => {
+					paid = false;
 					selectedPaymentMethod = method;
 				}}>{title}</Button>
 		{/each}
-	</section>
-	<section class="flex justify-center">
-		<img class="w-96" src="secret_box.jpg" alt="Pay the invoice to reveal the secret!" />
-	</section>
-	<section>
-		{#if selectedPaymentMethod === 'invoice'}
-			<Invoice />
-		{:else if selectedPaymentMethod === 'lsat'}
-			<Lsat />
-		{:else if selectedPaymentMethod === 'webln'}
-			<Webln />
-		{:else if selectedPaymentMethod === 'keysend'}
-			<Keysend />
-		{/if}
 	</section>
 </article>

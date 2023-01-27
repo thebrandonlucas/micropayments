@@ -37,6 +37,7 @@
 		"@types/qrcode": "^1.5.0",
 		"lightning": "^7.0.4",
 		"lsat-js": "^2.0.6",
-		"qrcode": "^1.5.1"
+		"qrcode": "^1.5.1",
+		"webln": "^0.3.2"
 	}
 }
