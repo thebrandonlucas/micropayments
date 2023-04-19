@@ -1,17 +1,9 @@
-import { authenticatedLndGrpc, type AuthenticatedLnd, getInvoice } from 'lightning';
+import { authenticatedLndGrpc, type AuthenticatedLnd } from 'lightning';
 
-export function getLnd(macaroon: string, socket: string) {
+export async function getLnd(socket: string, macaroon: string) {
 	const { lnd }: { lnd: AuthenticatedLnd } = authenticatedLndGrpc({
-		macaroon,
-		socket
+		socket,
+		macaroon
 	});
 	return lnd;
-}
-
-export async function checkPayment(payment_hash: string, lnd: AuthenticatedLnd) {
-	const { is_confirmed } = await getInvoice({
-		id: payment_hash,
-		lnd
-	});
-	return is_confirmed;
 }

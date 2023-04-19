@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { requestProvider, type WebLNProvider } from 'webln';
-	import Button from '../components/Button.svelte';
+	import Button from '$components/Button.svelte';
 
 	let webln: WebLNProvider;
 	export let paid: boolean;

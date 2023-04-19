@@ -1,16 +1,21 @@
 <script lang="ts">
 	import QRCode from 'qrcode';
-	import Button from '../components/Button.svelte';
+	import Button from '$components/Button.svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { paid } from '$stores/store';
 
 	const MAX_CHECK_ATTEMPTS = 10;
 
-	let invoice: string;
 	let paymentHash: string;
 	let checkAttempts = 0;
 	let error = '';
 	let polling = false;
+	let copyInterval: NodeJS.Timeout;
+	let pollInterval: NodeJS.Timeout;
 
-	export let paid: boolean;
+	export let invoice: string = '';
+
+	const dispatch = createEventDispatcher();
 
 	async function fetchInvoice() {
 		try {
@@ -30,6 +35,7 @@
 			console.log('Generated QRCode');
 		});
 		polling = true;
+		console.log({ polling });
 	}
 
 	async function pollForPayment() {
@@ -40,14 +46,14 @@
 					headers: { 'content-type': 'application/json' },
 					body: JSON.stringify({ paymentHash })
 				});
+
 				const { is_confirmed } = await result.json();
 				if (is_confirmed) {
-					paid = true;
-					console.log('confirmed');
+					paid.set(true);
+					dispatch('paid');
 				} else {
-					setTimeout(pollForPayment, 3000);
+					pollInterval = setTimeout(pollForPayment, 3000);
 					checkAttempts++;
-					console.log('attempt', checkAttempts);
 				}
 			} else if (checkAttempts > MAX_CHECK_ATTEMPTS) {
 				checkAttempts = 0;
@@ -59,16 +65,18 @@
 
 	function copy() {
 		navigator.clipboard.writeText(invoice || '');
-		setTimeout(() => {}, 4000);
+		copyInterval = setTimeout(() => {}, 4000);
 	}
 
-	$: fetchInvoice();
+	onDestroy(() => clearTimeout(pollInterval));
+
+	$: !invoice && fetchInvoice();
 	$: invoice && createQRCode();
-	$: polling && !paid && pollForPayment();
+	$: polling && !$paid && pollForPayment();
 </script>
 
 <div class="flex flex-col gap-4">
-	{#if !paid}
+	{#if !$paid}
 		<canvas id="canvas" />
 	{/if}
 	{#if error}
@@ -76,7 +84,7 @@
 	{/if}
 	{#if !invoice}
 		<p>Loading...</p>
-	{:else if !paid}
+	{:else if !$paid}
 		<Button on:click={copy}>Copy Invoice</Button>
 	{/if}
 </div>

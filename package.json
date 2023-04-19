@@ -35,8 +35,9 @@
 	"type": "module",
 	"dependencies": {
 		"@types/qrcode": "^1.5.0",
-		"lightning": "^7.0.4",
+		"lightning": "6.3.2",
 		"lsat-js": "^2.0.6",
+		"macaroon": "^3.0.4",
 		"qrcode": "^1.5.1",
 		"webln": "^0.3.2"
 	}

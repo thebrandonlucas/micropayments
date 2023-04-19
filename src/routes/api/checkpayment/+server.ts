@@ -1,15 +1,14 @@
+import { lndStore } from '../../../stores/store';
 import { json } from '@sveltejs/kit';
-import { API_ENDPOINT, INVOICE_MACAROON } from '$env/static/private';
-import { getLnd } from '../../../utils/lnd';
 import { getInvoice } from 'lightning';
+import { get } from 'svelte/store';
 import type { RequestHandler } from './$types';
 
-export async function POST({ request }): Promise<RequestHandler> {
+export const POST: RequestHandler = async function ({ request }): Promise<Response> {
 	const { paymentHash } = await request.json();
-	const lnd = await getLnd(INVOICE_MACAROON, API_ENDPOINT);
 	const { is_confirmed } = await getInvoice({
 		id: paymentHash,
-		lnd
+		lnd: get(lndStore)
 	});
 	return json({ is_confirmed });
-}
+};
