@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Button from '$components/Button.svelte';
 	import Invoice from '$features/Invoice.svelte';
+	import { paid } from '$stores/store';
 	import type { LsatOptions } from 'lsat-js';
 	import { onMount } from 'svelte';
 
 	let value = 50;
-	let paid = false;
 	let invoice = '';
 	let lsat: LsatOptions;
 
@@ -74,7 +74,7 @@
 	onMount(checkForToken);
 
 	// FIXME: make more robust
-	$: paid && lsat && saveLsat();
+	$: $paid && lsat && saveLsat();
 </script>
 
 <div class="flex flex-col gap-8 items-center">
@@ -87,11 +87,11 @@
 			whether a user has access to a given resource.
 		</p>
 	</div>
-	<Invoice {invoice} {paid} on:paid={() => (paid = true)} />
+	<Invoice {invoice} on:paid={() => paid.set(true)} />
 	<div class="flex flex-col gap-4 w-60 justify-center">
 		<p>Pay 1 sat per second of access</p>
 		<label for="slider">{value} seconds of access (via LSAT)</label>
 		<input name="slider" class="w-52" type="range" min="0" max="100" bind:value />
-		<!-- <Button on:click={createLsat}>Pay</Button> -->
+		<Button on:click={createLsat}>Pay</Button>
 	</div>
 </div>

@@ -2,4 +2,6 @@
 	import Invoice from '$features/Invoice.svelte';
 </script>
 
-<Invoice />
+<div class="flex justify-center">
+	<Invoice />
+</div>

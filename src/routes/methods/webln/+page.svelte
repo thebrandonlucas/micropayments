@@ -2,9 +2,9 @@
 	import { browser } from '$app/environment';
 	import { requestProvider, type WebLNProvider } from 'webln';
 	import Button from '$components/Button.svelte';
+	import { paid } from '$stores/store';
 
 	let webln: WebLNProvider;
-	export let paid: boolean;
 
 	async function enableWebln() {
 		if (browser) {
@@ -12,6 +12,9 @@
 				webln = await requestProvider();
 			} catch (e) {
 				console.error(e);
+				alert(
+					`Please enable WebLN for this site (try refreshing if you already rejected the connection)\n\n${e}`
+				);
 			}
 		}
 	}
@@ -21,8 +24,7 @@
 			const result = await fetch('/api/invoice');
 			const { request } = await result.json();
 			const data = await webln.sendPayment(request);
-			console.log({ data });
-			paid = true;
+			paid.set(true);
 		} catch (e) {
 			alert('WebLN failed to make payment');
 			console.error(e);
@@ -32,6 +34,8 @@
 	$: enableWebln();
 </script>
 
-{#if webln && !paid}
-	<Button on:click={pay}>Pay with WebLN Provider</Button>
+{#if webln && !$paid}
+	<div class="flex justify-center">
+		<Button on:click={pay}>Pay with WebLN Provider</Button>
+	</div>
 {/if}
