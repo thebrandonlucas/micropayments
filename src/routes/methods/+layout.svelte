@@ -7,13 +7,6 @@
 	}
 </script>
 
-<section class="flex justify-center">
-	{#if !$paid}
-		<img class="w-96" src="/images/secret_box.jpg" alt="Pay the invoice to reveal the secret!" />
-	{:else}
-		<img src="/images/secret_string.jpg" alt="A secret string!" />
-	{/if}
-</section>
 <section>
 	<slot />
 </section>
