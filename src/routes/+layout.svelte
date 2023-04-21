@@ -5,7 +5,7 @@
 
 <main class="flex flex-col gap-4 mx-auto w-1/2 my-6">
 	<header class="flex flex-col gap-4 text-center mb-10 items-center">
-		<h1 class="text-3xl">Micropayments</h1>
+		<a href="/"><h1 class="text-3xl">Micropayments</h1></a>
 		{#if $paid}
 			<p>Payment successful!</p>
 			<img src="/images/secret_string.jpg" alt="A secret string!" />

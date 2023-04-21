@@ -22,12 +22,12 @@
 	async function pay() {
 		try {
 			const result = await fetch('/api/invoice');
-			const { request } = await result.json();
-			const data = await webln.sendPayment(request);
+			const { payment_request } = await result.json();
+			await webln.sendPayment(payment_request);
 			paid.set(true);
 		} catch (e) {
-			alert('WebLN failed to make payment');
 			console.error(e);
+			alert('WebLN failed to make payment');
 		}
 	}
 
