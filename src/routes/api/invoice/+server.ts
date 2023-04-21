@@ -1,13 +1,15 @@
 import { json } from '@sveltejs/kit';
-import { createInvoice } from 'lightning';
-import { get } from 'svelte/store';
-import { lndStore } from '$stores/store';
+import { addInvoice } from '$utils/fetch';
+import { error } from '@sveltejs/kit';
 
 export async function GET() {
-	const { id, request } = await createInvoice({
-		lnd: get(lndStore),
-		tokens: 21,
-		description: "Reveal what's in the secret box"
-	});
-	return json({ id, request });
+	try {
+		const res = await addInvoice(21, "Reveal what's in the secret box!");
+		const { r_hash, payment_request } = res?.data || {};
+		return json({ r_hash, payment_request });
+	} catch (e) {
+		const err = e as Error;
+		console.error(err.message);
+		throw error(500, err.message);
+	}
 }

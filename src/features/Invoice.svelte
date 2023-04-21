@@ -1,7 +1,7 @@
 <script lang="ts">
 	import QRCode from 'qrcode';
 	import Button from '$components/Button.svelte';
-	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { paid } from '$stores/store';
 
 	const MAX_CHECK_ATTEMPTS = 10;
@@ -20,9 +20,9 @@
 	async function fetchInvoice() {
 		try {
 			const result = await fetch('/api/invoice');
-			const { id, request } = await result.json();
-			invoice = request;
-			paymentHash = id;
+			const { r_hash, payment_request } = await result.json();
+			invoice = payment_request;
+			paymentHash = r_hash;
 		} catch (e) {
 			console.error(e);
 		}
@@ -30,6 +30,7 @@
 
 	function createQRCode() {
 		const canvas = document.getElementById('canvas');
+		console.log({ invoice });
 		QRCode.toCanvas(canvas, invoice as string, (error: unknown) => {
 			if (error) console.error(error);
 			console.log('Generated QRCode');
@@ -47,8 +48,8 @@
 					body: JSON.stringify({ paymentHash })
 				});
 
-				const { is_confirmed } = await result.json();
-				if (is_confirmed) {
+				const { settled } = await result.json();
+				if (settled) {
 					paid.set(true);
 					dispatch('paid');
 				} else {
@@ -70,7 +71,7 @@
 
 	onDestroy(() => clearTimeout(pollInterval));
 
-	$: !invoice && fetchInvoice();
+	onMount(fetchInvoice);
 	$: invoice && createQRCode();
 	$: polling && !$paid && pollForPayment();
 </script>
