@@ -3,6 +3,7 @@
 	import Button from '../../components/Button.svelte';
 
 	function resetPaid() {
+		console.log('here');
 		paid.set(false);
 	}
 </script>

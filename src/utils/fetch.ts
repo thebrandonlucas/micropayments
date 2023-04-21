@@ -4,7 +4,7 @@ import https from 'https';
 
 // LND API: https://lightning.engineering/api-docs/api/lnd/
 const node = axios.create({
-	baseURL: `${API_ENDPOINT}:8080`,
+	baseURL: API_ENDPOINT,
 	httpsAgent: new https.Agent({
 		rejectUnauthorized: false
 	}),

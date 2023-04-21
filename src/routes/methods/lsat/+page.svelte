@@ -87,7 +87,7 @@
 			whether a user has access to a given resource.
 		</p>
 	</div>
-	<Invoice {invoice} on:paid={() => paid.set(true)} />
+	<Invoice {invoice} />
 	<div class="flex flex-col gap-4 w-60 justify-center">
 		<p>Pay 1 sat per second of access</p>
 		<label for="slider">{value} seconds of access (via LSAT)</label>

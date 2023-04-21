@@ -1,7 +1,7 @@
 <script lang="ts">
 	import QRCode from 'qrcode';
 	import Button from '$components/Button.svelte';
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { paid } from '$stores/store';
 
 	const MAX_CHECK_ATTEMPTS = 10;
@@ -14,8 +14,6 @@
 	let pollInterval: NodeJS.Timeout;
 
 	export let invoice: string = '';
-
-	const dispatch = createEventDispatcher();
 
 	async function fetchInvoice() {
 		try {
@@ -30,7 +28,6 @@
 
 	function createQRCode() {
 		const canvas = document.getElementById('canvas');
-		console.log({ invoice });
 		QRCode.toCanvas(canvas, invoice as string, (error: unknown) => {
 			if (error) console.error(error);
 			console.log('Generated QRCode');
@@ -50,8 +47,8 @@
 
 				const { settled } = await result.json();
 				if (settled) {
+					invoice = '';
 					paid.set(true);
-					dispatch('paid');
 				} else {
 					pollInterval = setTimeout(pollForPayment, 3000);
 					checkAttempts++;
@@ -60,6 +57,7 @@
 				checkAttempts = 0;
 				error = 'Timeout, too many checks';
 				polling = false;
+				invoice = '';
 			}
 		}
 	}
@@ -83,7 +81,7 @@
 	{#if error}
 		<p>{error}</p>
 	{/if}
-	{#if !invoice}
+	{#if !$paid && !invoice}
 		<p>Loading...</p>
 	{:else if !$paid}
 		<Button on:click={copy}>Copy Invoice</Button>

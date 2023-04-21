@@ -3,6 +3,7 @@
 	import { requestProvider, type WebLNProvider } from 'webln';
 	import Button from '$components/Button.svelte';
 	import { paid } from '$stores/store';
+	import { onMount } from 'svelte';
 
 	let webln: WebLNProvider;
 
@@ -32,6 +33,14 @@
 	}
 
 	$: enableWebln();
+
+	console.log({ $paid });
+
+	onMount(() => {
+		console.log('onmount', { $paid });
+	});
+
+	// $: console.log({ webln, $paid });
 </script>
 
 {#if webln && !$paid}
