@@ -5,9 +5,7 @@ import { lookupInvoice } from '$utils/fetch';
 export const POST: RequestHandler = async function ({ request }): Promise<Response> {
 	const { paymentHash } = await request.json();
 	try {
-		// LND docs appear to be wrong here,
-		// they say that you should be able to pass base64 paymentHash to lookupInvoice,
-		// but lookupInvoice still requires conversion to hex
+		// Depending on LND version, you will either need to pass paymentHash as hex or base64 here
 		// https://lightning.engineering/api-docs/api/lnd/lightning/lookup-invoice#:~:text=The-,hex%2Dencoded,-payment%20hash%20of
 		const hexPaymentHash = Buffer.from(paymentHash, 'base64').toString('hex');
 		const { data } = (await lookupInvoice(hexPaymentHash)) || {};
