@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Button from '$components/Button.svelte';
 	import Invoice from '$features/Invoice.svelte';
-	import { paid } from '$stores/store';
 	import type { LsatOptions } from 'lsat-js';
 	import { onMount } from 'svelte';
 
 	let value = 50;
 	let invoice = '';
 	let lsat: LsatOptions;
+	let paid = false;
 
 	async function createLsat() {
 		// get lsat from api (generate invoice with permissions and expiration as num seconds Date.now() + paidForSeconds)
@@ -74,7 +74,7 @@
 	onMount(checkForToken);
 
 	// FIXME: make more robust
-	$: $paid && lsat && saveLsat();
+	$: paid && lsat && saveLsat();
 </script>
 
 <div class="flex flex-col gap-8 items-center">
